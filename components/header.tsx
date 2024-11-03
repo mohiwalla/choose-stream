@@ -19,13 +19,6 @@ export default function Nav() {
 						href="/"
 						className="flex items-center space-x-3 rtl:space-x-reverse"
 					>
-						<Image
-							src={logo}
-							width={40}
-							height={40}
-							className="same h-8 w-full"
-							alt=""
-						/>
 						<span className="self-center text-2xl font-semibold whitespace-nowrap capitalize xs:inline hidden">
 							{name}
 						</span>
