@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+	@apply scroll-smooth;
+}
+
+:root {
+	--background: 0 0% 100%;
+	--foreground: 224 71.4% 4.1%;
+	--card: 0 0% 100%;
+	--card-foreground: 224 71.4% 4.1%;
+	--popover: 0 0% 100%;
+	--popover-foreground: 224 71.4% 4.1%;
+	--primary: 220.9 39.3% 11%;
+	--primary-foreground: 210 20% 98%;
+	--secondary: 220 14.3% 95.9%;
+	--secondary-foreground: 220.9 39.3% 11%;
+	--muted: 220 14.3% 95.9%;
+	--muted-foreground: 220 8.9% 46.1%;
+	--accent: 220 14.3% 95.9%;
+	--accent-foreground: 220.9 39.3% 11%;
+	--destructive: 0 84.2% 60.2%;
+	--destructive-foreground: 210 20% 98%;
+	--border: 220 13% 91%;
+	--input: 220 13% 91%;
+	--ring: 224 71.4% 4.1%;
+	--radius: 0.75rem;
+	--blue: 221 83.19% 53.33%;
+}
+
+.dark {
+	--background: 224 71.4% 4.1%;
+	--foreground: 210 20% 98%;
+	--card: 224 71.4% 4.1%;
+	--card-foreground: 210 20% 98%;
+	--popover: 224 71.4% 4.1%;
+	--popover-foreground: 210 20% 98%;
+	--primary: 210 20% 98%;
+	--primary-foreground: 220.9 39.3% 11%;
+	--secondary: 215 27.9% 16.9%;
+	--secondary-foreground: 210 20% 98%;
+	--muted: 215 27.9% 16.9%;
+	--muted-foreground: 217.9 10.6% 64.9%;
+	--accent: 215 27.9% 16.9%;
+	--accent-foreground: 210 20% 98%;
+	--destructive: 0 62.8% 30.6%;
+	--destructive-foreground: 210 20% 98%;
+	--border: 215 27.9% 16.9%;
+	--input: 215 27.9% 16.9%;
+	--ring: 216 12.2% 83.9%;
+	--blue: 217 91.22% 59.8%;
+}
+
+* {
+	@apply border-border;
+}
+
+body {
+	@apply bg-background text-foreground;
+}
+
+a,
+button,
+label,
+img {
+	user-select: none;
+}
+
+img,
+input {
+	width: 100%;
+}
+
+img {
+	pointer-events: none;
+}
+
+label {
+	cursor: pointer;
+}
+
+::-webkit-scrollbar {
+	@apply hidden;
+}
+
+a:has(svg):not(.same) svg {
+	transition: transform 200ms;
+}
+
+a:has(svg):not(.same):hover svg {
+	--move: 3px;
+	transform: translate(var(--move), calc(-1 * var(--move)));
+}
+
+:has(span.arrow) > .arrow {
+	--size: 8px;
+	width: var(--size);
+	height: var(--size);
+	border-right: 2.5px solid currentColor;
+	border-bottom: 2.5px solid currentColor;
+	position: relative;
+	transform: rotate(-45deg);
+	margin: 0 var(--size);
+	transition: all 200ms;
+}
+
+:has(span.arrow) > .arrow::before {
+	content: "";
+	display: block;
+	background-color: currentColor;
+	width: 20px;
+	transform-origin: bottom right;
+	height: 3px;
+	position: absolute;
+	opacity: 0;
+	bottom: calc(-4px / 2);
+	transform: rotate(45deg);
+	transition: all 200ms;
+	right: 0;
+}
+
+:has(span.arrow):hover > .arrow {
+	transform: rotate(-45deg) translate(6px, 6px);
+	border-color: text-hover-color;
+}
+
+:has(span.arrow):hover > .arrow::before {
+	opacity: 1;
+	width: 10px;
+}
+
+span.typewriter-effect-span::after {
+	font-weight: 100;
+}
+
+select {
+	appearance: none;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 1 4 4 4-4'/%3E%3C/svg%3E");
+	background-position: right 0.75rem center;
+	background-repeat: no-repeat;
+	background-size: 0.75em 0.75em;
+	padding-right: 2.5rem;
+}
+
+@media (pointer: coarse) {
+	* {
+		cursor: default !important;
+	}
+}
