@@ -36,6 +36,10 @@ export default function Enroll() {
 		checkboxes.slice(optionCountTillSection(0, 4), optionCountTillSection(0, 5)).filter((checkbox) => checkbox).length,
 		checkboxes.slice(optionCountTillSection(0, 5), optionCountTillSection(0, 6)).filter((checkbox) => checkbox).length,
 	]
+	const topTwoStreams = marks
+		.map((mark, index) => ({ mark, stream: streams[index] }))
+		.sort((a, b) => b.mark - a.mark)
+		.slice(0, 2)
 
 	async function handleSubmit(e: FormEvent) {
 		e.preventDefault()
@@ -248,68 +252,77 @@ export default function Enroll() {
 
 			{currentSection == 7 && (
 				<>
-					<h3 className="text-xl font-extrabold dark:text-white flex items-center">
-						You should choose {streams[marks.indexOf(Math.max(...marks))]}.
-					</h3>
+					<div>
+						<h3 className="text-xl font-extrabold dark:text-white flex items-center">
+							Top streams for you:
+						</h3>
+						<ul className="mt-4">
+							{topTwoStreams.map(({ stream, mark }, index) => (
+								<li key={index}>
+									<b>{stream}:</b> {mark} points
+								</li>
+							))}
+						</ul>
+					</div>
 
-					<div className="-mt-7">
+					<div className="-mt-2">
 						<p>
-							Your overall score is{" "}
-							{checkboxes.filter((checkbox) => checkbox).length}.
+							Your highest score is{" "}
+							{topTwoStreams[0].mark}.
 						</p>
 
 						<h5 className="font-bold text-lg mt-4 mb-2">Details</h5>
 
 						<table
 							border={1}
-							className="border-black [&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800 w-full text-center"
+							className="border-black [&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800 w-full"
 						>
 							<thead>
-								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<th className="w-2 px-6">Section</th>
-									<th>Marks</th>
+								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800 text-left">
+									<th className="px-4 py-1">Section</th>
+									<th className="px-4 py-1">Marks</th>
 								</tr>
 							</thead>
 
 							<tbody>
 								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td>A</td>
-									<td>
+									<td className="px-4 py-1">{streams[0]}</td>
+									<td className="px-4 py-1">
 										{marks[0]} out of{" "}
 										{questions[0].map((question) => question.options).flat(Infinity).length}
 									</td>
 								</tr>
 								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td>B</td>
-									<td>
+									<td className="px-4 py-1">{streams[1]}</td>
+									<td className="px-4 py-1">
 										{marks[1]} out of{" "}
 										{questions[1].map((question) => question.options).flat(Infinity).length}
 									</td>
 								</tr>
 								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td>C</td>
-									<td>
+									<td className="px-4 py-1">{streams[2]}</td>
+									<td className="px-4 py-1">
 										{marks[2]} out of{" "}
 										{questions[2].map((question) => question.options).flat(Infinity).length}
 									</td>
 								</tr>
 								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td>D</td>
-									<td>
+									<td className="px-4 py-1">{streams[3]}</td>
+									<td className="px-4 py-1">
 										{marks[3]} out of{" "}
 										{questions[3].map((question) => question.options).flat(Infinity).length}
 									</td>
 								</tr>
 								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td>E</td>
-									<td>
+									<td className="px-4 py-1">{streams[4]}</td>
+									<td className="px-4 py-1">
 										{marks[4]} out of{" "}
 										{questions[4].map((question) => question.options).flat(Infinity).length}
 									</td>
 								</tr>
 								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td>F</td>
-									<td>
+									<td className="px-4 py-1">{streams[5]}</td>
+									<td className="px-4 py-1">
 										{marks[5]} out of{" "}
 										{questions[5].map((question) => question.options).flat(Infinity).length}
 									</td>
