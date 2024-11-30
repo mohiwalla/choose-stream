@@ -4,21 +4,27 @@ import { questions } from "@/app/config/chosse-stream-questions"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { FormEvent, useEffect, useState } from "react"
+import { FormEvent, useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Check, ChevronLeft, ChevronRight, Save, Share2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 
 export default function Enroll() {
+	const [loading, setLoading] = useState(true)
 	const [userData, setUserData] = useState({
 		name: "",
 		ePunjabID: "",
-		phone: ""
+		phone: "",
 	})
 	const alphabets = ["a", "b", "c", "d", "e", "f", "g", "h"]
 	const [currentSection, setCurrentSection] = useState(0)
-	const [saved, setSaved] = useState(false)
-	const [checkboxes, setCheckboxes] = useState(new Array(questions.flat(Infinity).map((question: any) => question.options)
-		.flat(Infinity).length).fill(false))
+	const [checkboxes, setCheckboxes] = useState(
+		new Array(
+			questions
+				.flat(Infinity)
+				.map((question: any) => question.options)
+				.flat(Infinity).length
+		).fill(false)
+	)
 	const streams = [
 		"Health & Medicine",
 		"Agriculture & Sciences",
@@ -29,38 +35,52 @@ export default function Enroll() {
 	]
 
 	const marks = [
-		checkboxes.slice(0, optionCountTillSection(0, 1)).filter((checkbox) => checkbox).length,
-		checkboxes.slice(optionCountTillSection(0, 1), optionCountTillSection(0, 2)).filter((checkbox) => checkbox).length,
-		checkboxes.slice(optionCountTillSection(0, 2), optionCountTillSection(0, 3)).filter((checkbox) => checkbox).length,
-		checkboxes.slice(optionCountTillSection(0, 3), optionCountTillSection(0, 4)).filter((checkbox) => checkbox).length,
-		checkboxes.slice(optionCountTillSection(0, 4), optionCountTillSection(0, 5)).filter((checkbox) => checkbox).length,
-		checkboxes.slice(optionCountTillSection(0, 5), optionCountTillSection(0, 6)).filter((checkbox) => checkbox).length,
+		checkboxes
+			.slice(0, optionCountTillSection(0, 1))
+			.filter((checkbox) => checkbox).length,
+		checkboxes
+			.slice(optionCountTillSection(0, 1), optionCountTillSection(0, 2))
+			.filter((checkbox) => checkbox).length,
+		checkboxes
+			.slice(optionCountTillSection(0, 2), optionCountTillSection(0, 3))
+			.filter((checkbox) => checkbox).length,
+		checkboxes
+			.slice(optionCountTillSection(0, 3), optionCountTillSection(0, 4))
+			.filter((checkbox) => checkbox).length,
+		checkboxes
+			.slice(optionCountTillSection(0, 4), optionCountTillSection(0, 5))
+			.filter((checkbox) => checkbox).length,
+		checkboxes
+			.slice(optionCountTillSection(0, 5), optionCountTillSection(0, 6))
+			.filter((checkbox) => checkbox).length,
 	]
 	const topTwoStreams = marks
 		.map((mark, index) => ({ mark, stream: streams[index] }))
 		.sort((a, b) => b.mark - a.mark)
 		.slice(0, 2)
 
-	async function handleSubmit(e: FormEvent) {
+	function handleSubmit(e: FormEvent) {
 		e.preventDefault()
 
 		if (currentSection < 7) {
+			if (currentSection == 6) {
+				const formData = new FormData()
+
+				formData.append("name", userData.name)
+				formData.append("ePunjabID", userData.ePunjabID)
+				formData.append("phone", userData.phone)
+				formData.append(
+					"marks",
+					checkboxes.map((checkbox) => (checkbox ? 1 : 0)).join()
+				)
+
+				fetch("/api/choose-stream", {
+					method: "post",
+					body: JSON.stringify(Object.fromEntries(formData)),
+				}).then(() => setLoading(false))
+			}
+
 			return changeSection(currentSection + 1)
-		}
-
-		if (!saved) {
-			const formData = new FormData()
-			
-			formData.append("name", userData.name)
-			formData.append("ePunjabID", userData.ePunjabID)
-			formData.append("phone", userData.phone)
-			formData.append("marks", checkboxes.map(checkbox => checkbox ? 1 : 0).join())
-
-			setSaved(true)
-			await fetch("/api/choose-stream", {
-				method: "post",
-				body: JSON.stringify(Object.fromEntries(formData))
-			})
 		}
 	}
 
@@ -97,10 +117,12 @@ export default function Enroll() {
 							autoComplete="name"
 							id="name"
 							value={userData.name}
-							onChange={e => setUserData({
-								...userData,
-								name: e.currentTarget.value
-							})}
+							onChange={(e) =>
+								setUserData({
+									...userData,
+									name: e.currentTarget.value,
+								})
+							}
 							type="text"
 							autoFocus
 							autoCapitalize="words"
@@ -120,10 +142,12 @@ export default function Enroll() {
 							id="ePunjabID"
 							name="ePunjabID"
 							value={userData.ePunjabID}
-							onChange={e => setUserData({
-								...userData,
-								ePunjabID: e.currentTarget.value
-							})}
+							onChange={(e) =>
+								setUserData({
+									...userData,
+									ePunjabID: e.currentTarget.value,
+								})
+							}
 							inputMode="numeric"
 							placeholder="2024xxxxxxxx"
 						/>
@@ -144,10 +168,12 @@ export default function Enroll() {
 							autoComplete="phone"
 							id="phone"
 							value={userData.phone}
-							onChange={e => setUserData({
-								...userData,
-								phone: e.currentTarget.value
-							})}
+							onChange={(e) =>
+								setUserData({
+									...userData,
+									phone: e.currentTarget.value,
+								})
+							}
 							type="text"
 							inputMode="numeric"
 							placeholder="98xxxxxxxxx1"
@@ -199,7 +225,10 @@ export default function Enroll() {
 															className="rounded transition-all duration-100"
 															checked={
 																checkboxes[
-																	optionCountTillSection(0, currentSection - 1) +
+																	optionCountTillSection(
+																		0,
+																		currentSection - 1
+																	) +
 																		questions[currentSection - 1]
 																			.slice(0, questionIndex)
 																			.map((question) => question.options)
@@ -208,7 +237,11 @@ export default function Enroll() {
 																]
 															}
 															onCheckedChange={(isChecked) => {
-																const index = optionCountTillSection(0, currentSection - 1) +
+																const index =
+																	optionCountTillSection(
+																		0,
+																		currentSection - 1
+																	) +
 																	questions[currentSection - 1]
 																		.slice(0, questionIndex)
 																		.map((question) => question.options)
@@ -250,95 +283,114 @@ export default function Enroll() {
 				</>
 			)}
 
-			{currentSection == 7 && (
-				<>
-					<div>
-						<h3 className="text-xl font-extrabold dark:text-white flex items-center">
-							Top streams for you:
-						</h3>
-						<ul className="mt-4">
-							{topTwoStreams.map(({ stream, mark }, index) => (
-								<li key={index}>
-									<b>{stream}:</b> {mark} points
-								</li>
-							))}
-						</ul>
+			{currentSection == 7 &&
+				(loading ? (
+					<div className="flex justify-center items-center py-6">
+						<Loader2 className="animate-spin w-12 h-auto" strokeWidth={2.5} />
 					</div>
+				) : (
+					<>
+						<div>
+							<h3 className="text-xl font-extrabold dark:text-white flex items-center">
+								Top streams for you:
+							</h3>
+							<ul className="mt-4">
+								{topTwoStreams.map(({ stream, mark }, index) => (
+									<li key={index}>
+										<b>{stream}:</b> {mark} points
+									</li>
+								))}
+							</ul>
+						</div>
 
-					<div className="-mt-2">
-						<p>
-							Your highest score is{" "}
-							{topTwoStreams[0].mark}.
-						</p>
+						<div className="-mt-2">
+							<p>Your highest score is {topTwoStreams[0].mark}.</p>
 
-						<h5 className="font-bold text-lg mt-4 mb-2">Details</h5>
+							<h5 className="font-bold text-lg mt-4 mb-2">Details</h5>
 
-						<table
-							border={1}
-							className="border-black [&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800 w-full"
-						>
-							<thead>
-								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800 text-left">
-									<th className="px-4 py-1">Section</th>
-									<th className="px-4 py-1">Marks</th>
-								</tr>
-							</thead>
+							<table
+								border={1}
+								className="border-black [&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800 w-full"
+							>
+								<thead>
+									<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800 text-left">
+										<th className="px-4 py-1">Section</th>
+										<th className="px-4 py-1">Marks</th>
+									</tr>
+								</thead>
 
-							<tbody>
-								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td className="px-4 py-1">{streams[0]}</td>
-									<td className="px-4 py-1">
-										{marks[0]} out of{" "}
-										{questions[0].map((question) => question.options).flat(Infinity).length}
-									</td>
-								</tr>
-								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td className="px-4 py-1">{streams[1]}</td>
-									<td className="px-4 py-1">
-										{marks[1]} out of{" "}
-										{questions[1].map((question) => question.options).flat(Infinity).length}
-									</td>
-								</tr>
-								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td className="px-4 py-1">{streams[2]}</td>
-									<td className="px-4 py-1">
-										{marks[2]} out of{" "}
-										{questions[2].map((question) => question.options).flat(Infinity).length}
-									</td>
-								</tr>
-								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td className="px-4 py-1">{streams[3]}</td>
-									<td className="px-4 py-1">
-										{marks[3]} out of{" "}
-										{questions[3].map((question) => question.options).flat(Infinity).length}
-									</td>
-								</tr>
-								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td className="px-4 py-1">{streams[4]}</td>
-									<td className="px-4 py-1">
-										{marks[4]} out of{" "}
-										{questions[4].map((question) => question.options).flat(Infinity).length}
-									</td>
-								</tr>
-								<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
-									<td className="px-4 py-1">{streams[5]}</td>
-									<td className="px-4 py-1">
-										{marks[5]} out of{" "}
-										{questions[5].map((question) => question.options).flat(Infinity).length}
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-
-					<div className="flex justify-end">
-						<Button className="gap-1">
-							{saved ? "Saved" : "Save"}
-							{saved ? <Check /> : <Save />}
-						</Button>
-					</div>
-				</>
-			)}
+								<tbody>
+									<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
+										<td className="px-4 py-1">{streams[0]}</td>
+										<td className="px-4 py-1">
+											{marks[0]} out of{" "}
+											{
+												questions[0]
+													.map((question) => question.options)
+													.flat(Infinity).length
+											}
+										</td>
+									</tr>
+									<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
+										<td className="px-4 py-1">{streams[1]}</td>
+										<td className="px-4 py-1">
+											{marks[1]} out of{" "}
+											{
+												questions[1]
+													.map((question) => question.options)
+													.flat(Infinity).length
+											}
+										</td>
+									</tr>
+									<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
+										<td className="px-4 py-1">{streams[2]}</td>
+										<td className="px-4 py-1">
+											{marks[2]} out of{" "}
+											{
+												questions[2]
+													.map((question) => question.options)
+													.flat(Infinity).length
+											}
+										</td>
+									</tr>
+									<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
+										<td className="px-4 py-1">{streams[3]}</td>
+										<td className="px-4 py-1">
+											{marks[3]} out of{" "}
+											{
+												questions[3]
+													.map((question) => question.options)
+													.flat(Infinity).length
+											}
+										</td>
+									</tr>
+									<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
+										<td className="px-4 py-1">{streams[4]}</td>
+										<td className="px-4 py-1">
+											{marks[4]} out of{" "}
+											{
+												questions[4]
+													.map((question) => question.options)
+													.flat(Infinity).length
+											}
+										</td>
+									</tr>
+									<tr className="[&>*]:border [&>*]:border-gray-400 [&>*]:dark:border-gray-800">
+										<td className="px-4 py-1">{streams[5]}</td>
+										<td className="px-4 py-1">
+											{marks[5]} out of{" "}
+											{
+												questions[5]
+													.map((question) => question.options)
+													.flat(Infinity).length
+											}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</>
+				))}
 		</form>
 	)
 }
